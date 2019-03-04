@@ -29,7 +29,7 @@ Niektóre z reguł w pliku Makefile mogą być czynnościami pomocniczymi, są t
 
 
 2. Proszę skompilować i uruchomić program rozbudowany w ramach poprzedniej sekcji.
-Zrobione.
+Done.
 
 
 3. Proszę zbudować trywialny plik Makefile dla powyższego programu.
@@ -37,12 +37,12 @@ Nazwa pliku: Makefile
 Polecenia: 'rm -f *~' oraz 'rm -f *.bak' usuwają pliki kopii zapasowych, które mogą powstać w trakcie edycji plików źródłowych.
 
 4. Proszę dopisać do pliku Makefile cel clean usuwający zbędne pliki powstające podczas kompilaji (pliki .o).
-Zrobione.
+Done.
 
 
 5. Proszę zadać cel clean jako cel pozorny.
-Zrobione.
+Done.
 
 
 6. Proszę zbudować program ponownie, używając narzędzia make.
-Zrobione.
+Done.
