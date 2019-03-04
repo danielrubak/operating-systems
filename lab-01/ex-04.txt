@@ -1,0 +1,48 @@
+### Kompilowanie programów: gcc i make ###
+
+1. Na podstawie własnej wiedzy, manuala oraz ćwiczeń z gcc i make odpowiedz na pytania:
+a) Co oznacza opcje -Wall, -c?
+-Wall -> This enables all the warnings about constructions that some user consider questionable, and that are easy to avoid (or modify to prevent the warning), even in conjunction with macros.
+-c -> kompiluje lub asembluje ale nie linkuje
+
+b) Jak kompiluje się program wielomodułowy?
+gcc -Wall -ansi -pedantic modul1.c modul2.c ... modulN.c -o program
+
+lub
+
+gcc -c -Wall -ansi -pedantic modul1.c -o modul1.o
+gcc -c -Wall -ansi -pedantic modul2.c -o modul2.o
+...
+gcc -c -Wall -ansi -pedantic modulN.c -o modulN.o
+gcc modul1.o modul2.o ... modulN.o -o program
+
+c) Jak domyślnie nazywa się się plik konfiguracyjny programu make?
+makefile
+
+d) W pliku Makefile można definiować więcej niż jeden cel, jednak domyślnie make uruchamia tylko jeden, pierwszy. Jak uruchomić konkretny (nie pierwszy!) cel z pliku Makefile?
+
+Można wymusić uruchomienie dowolnego celu z pliku Makefile podając ten cel, tj. make <target_name>
+
+e) Co to są cele pozorne?
+
+Niektóre z reguł w pliku Makefile mogą być czynnościami pomocniczymi, są to tak zwane cele “pozorne” (ang. phony). Phony wywołuje się np tak: .PHONY: clean. Wtedy po wywołaniu polecenia make plik się skompiluje według zadanego celu ale dodatkowo też posprząta po sobie, np. usunie zbędne pliki utowrzone na etapie kompilacji.
+
+
+2. Proszę skompilować i uruchomić program rozbudowany w ramach poprzedniej sekcji.
+Zrobione.
+
+
+3. Proszę zbudować trywialny plik Makefile dla powyższego programu.
+Nazwa pliku: Makefile
+Polecenia: 'rm -f *~' oraz 'rm -f *.bak' usuwają pliki kopii zapasowych, które mogą powstać w trakcie edycji plików źródłowych.
+
+4. Proszę dopisać do pliku Makefile cel clean usuwający zbędne pliki powstające podczas kompilaji (pliki .o).
+Zrobione.
+
+
+5. Proszę zadać cel clean jako cel pozorny.
+Zrobione.
+
+
+6. Proszę zbudować program ponownie, używając narzędzia make.
+Zrobione.

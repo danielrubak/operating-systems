@@ -1,0 +1,24 @@
+### Wykorzystanie funkcji systemowych i sprawdzanie błędów ###
+
+1. Jaki plik nagłówkowy należy dołączyć do programu aby móc odczytać wartość zmiennej errno?
+#include <errno.h>
+
+
+2. Czym różnią się funkcje perror i strerror?
+perror - print a system error message, #include <stdio.h> (kod błędu)
+strerror - return string describing error number, #include <string.h> (treść błędu)
+
+
+3. Jakie dwie stałe języka C podaje się jako argument funkcji exit?
+EXIT_SUCCESS i  EXIT_FAILURE
+
+
+4. Proszę pobrać plik: ex1open.c
+Oryginalna wersja pliku: ex1open_original.c
+
+
+5. Proszę zmodyfikować program tak, aby:
+a) sprawdzana była wartość zwracana przed funkcje open(2) i read(2),
+b) program sprawdzał czy i jaki błąd wystąpił oraz informował o tym użytkownika,
+c) w przypadku błędu program wywoływał funkcję exit z odpowiednio ustawionym parametrem.
+Rozwiązanie znajduje się w pliku ex1open.c
