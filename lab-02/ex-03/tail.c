@@ -15,7 +15,6 @@ is used, only n lines of each file should be printed.
 void tail(FILE* file, char* file_name, int n);
 
 int main(int argc, char** argv) {
-  int file_count = 0;
   int n_flag_value = 10;
 
   if (argc > 1) {
@@ -40,7 +39,6 @@ int main(int argc, char** argv) {
           fprintf(stderr, "./: open: %s: %s\n", argv[0], strerror(errno));
           continue;
         }
-        /*printf("OPTIONS: file = '%s', n = %d\n", argv[i], n_flag_value); /**/
         tail(f, argv[i], n_flag_value);
         printf("\n");
         fclose(f);
@@ -63,14 +61,10 @@ void tail(FILE* file, char* file_name, int n) {
     while (pos > 0) {
       c = fgetc(file);
       if (c != EOF) {
-        /*printf("Position in file: %ld, Stored value: ASCII -> %d, CHAR ->
-           %c\n", pos, c, c); /**/
         if (c == '\n' && ++nl_count == n) {
-          /*printf("Position in file: %ld, Stored value: NL\n", pos); /**/
           break;
         }
       } else {
-        /*printf("Position in file: %ld, Stored value: EOF\n", pos); /**/
       }
       fseek(file, --pos, SEEK_SET);
     }
