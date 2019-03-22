@@ -20,7 +20,7 @@ SRCS := $(shell find . -name '*.c')
 OBJS = $(SRCS:.c=.o)
 
 # the build target executable:
-TARGET = shell
+TARGET = 
 
 # typing 'make' will invoke the first target entry in the file
 # (in this case the default target entry)

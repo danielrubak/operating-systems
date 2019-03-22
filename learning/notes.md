@@ -74,7 +74,11 @@ Jest bardzo wiele opcji realizowania komunikacji międzyprocesowej.
 -- **Sockety** - najbardziej zajebiste, nie muszą działać w obrębie tej samej maszyny.
 
 **Wywołania systemowe**
-Zazwyczaj są to małe funkcje, które wywołują specjalny kod, przenoszą kontrolę z procesu użytkownika do kernela i później zwracają wynik.
+Zazwyczaj są to małe funkcje, które wywołują specjalny kod, przenoszą kontrolę z procesu użytkownika do kernela i później zwracają wynik. Przez to, że wywoływane są dwa przełączenia pomiędzy kontekstami (z procesu do kernela i z powrotem) to zajmuje to więcej czasu niż wywołanie funkcji z przestrzeni adresowej procesu.
+
+
+**Obsługa błędów**
+
 
 
 [comment]: <> (do uzupełnienia)
