@@ -27,6 +27,16 @@ int main(int argc, char *argv[]) {
     }
   }
 
+  for (t = 0; t < 10; ++t) {
+    rc = pthread_join(threads[t], NULL);
+
+    if (rc) {
+      fprintf(stderr, "Failed to create thread #%ld - %s\n", (long)t,
+              strerror(rc));
+      exit(EXIT_FAILURE);
+    }
+  }
+
   printf("End of the main thread!\n");
   return 0;
 }
