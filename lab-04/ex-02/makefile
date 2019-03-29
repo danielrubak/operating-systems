@@ -20,7 +20,7 @@ SRCS := $(shell find . -name '*.c')
 OBJS = $(SRCS:.c=.o)
 
 # the build target executable:
-TARGET = shell
+TARGETS = save
 
 # typing 'make' will invoke the first target entry in the file
 # (in this case the default target entry)
@@ -29,7 +29,7 @@ TARGET = shell
 default: main
 
 main: $(OBJS)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS) $(LIBS)
+	$(CC) $(CFLAGS) -o $(TARGETS) $(OBJS) $(LIBS)
 
 .c.o:
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -37,4 +37,4 @@ main: $(OBJS)
 .PHONY: clean
 
 clean:
-	$(RM) $(TARGET) *.o *~
+	$(RM) $(TARGETS) *.o *~
