@@ -69,7 +69,9 @@ void* increment(void* arg) {
 void* printinfo(void* arg) {
   pthread_mutex_lock(&mutex);
 
-  while (globalvariable < 100) pthread_cond_wait(&cond, &mutex);
+  while (globalvariable < 100) {
+    pthread_cond_wait(&cond, &mutex);
+  }
   printf("osiągnieta została maksymalna wartość %d\n", globalvariable);
 
   pthread_mutex_unlock(&mutex);

@@ -3,7 +3,7 @@
  */
 
 int main(void) {
-  int res;
+  // int res;
   char cmd[MAXCMD];
   struct cmdlist cmds;
 
@@ -24,8 +24,9 @@ int main(void) {
   while (1) {
     printprompt();
     if (readcmd(cmd, MAXCMD) == RESERROR) continue;
-    res = parsecmd(cmd, MAXCMD, &cmds);
-    /* printparsedcmds(&cmds); */
+    // res = parsecmd(cmd, MAXCMD, &cmds);
+    parsecmd(cmd, MAXCMD, &cmds);
+    // printparsedcmds(&cmds);
     executecmds(&cmds);
     dealocate(&cmds);
   }
@@ -102,23 +103,46 @@ int readcmd(char* __buf, int __bufsize) {
 /* 3. Parsing this command */
 int parsecmd(char* __buf, int __bufsize, struct cmdlist* __head) {
   char* cmd = __buf; /* String that must be parsed  */
-  char* word;        /* String between white characters  */
+  // printf("Command to parse: %s\n", cmd);
+  char* word; /* String between white characters  */
   struct cmdlist* curr = __head;
 
   /* Reading next word - read strtok(3)  */
   while ((word = strtok(cmd, " \t\n")) != NULL) {
-    curr->argc++;
-    curr->argv = (char**)realloc(
-        curr->argv,
-        sizeof(char*) *
-            curr->argc); /* memory reallocation - needed for new argument  */
-    if (curr->argv == NULL) {
-      printf("Error while allocating memory!");
-      return RESERROR;
+    if (strcmp(word, "||") == 0 || strcmp(word, "&&") == 0) {
+      struct cmdlist* new_cmd = (struct cmdlist*)malloc(sizeof(struct cmdlist));
+      curr->next = new_cmd;
+
+      /* Setting up parsed command -- the NULL pointer at the end of the
+       * parameters list must added  */
+      if (setupparsedcommand(curr) == RESERROR) {
+        printf("Error while setting up parsed command.");
+        return RESERROR;
+      }
+
+      curr = new_cmd;
+      setupnewcommand(curr);
+      if (strcmp(word, "||") == 0) {
+        curr->conjuction = CONJOR;
+      } else {
+        curr->conjuction = CONJAND;
+      }
+      continue;
+
+    } else {
+      curr->argc++;
+      curr->argv = (char**)realloc(
+          curr->argv,
+          sizeof(char*) *
+              curr->argc); /* memory reallocation - needed for new argument  */
+      if (curr->argv == NULL) {
+        printf("Error while allocating memory!");
+        return RESERROR;
+      }
+      curr->argv[curr->argc - 1] = word; /* Storing new argument in the argument
+                                            vector in our structure */
+      cmd = NULL;
     }
-    curr->argv[curr->argc - 1] =
-        word; /* Storing new argument in the argument vector in our structure */
-    cmd = NULL;
   }
 
   /* Setting up parsed command -- the NULL pointer at the end of the parameters
@@ -134,30 +158,52 @@ int parsecmd(char* __buf, int __bufsize, struct cmdlist* __head) {
 
 /* 4. Executing parsed commands */
 int executecmds(struct cmdlist* __head) {
-  int f, e;
+  // printf("I am: %d\n", (int)getpid());
+  int f, e, procres = 0;
   struct cmdlist* curr = __head;
 
   while (curr != NULL) {
-    f = fork();
-    e = errno;
+    // printf("Previous command execution status: %d\n", procres);
+
+    if (procres == 0 && curr->conjuction == 1) {
+      curr = curr->next;
+      continue;
+    } else if (procres != 0 && curr->conjuction == 2) {
+      curr = curr->next;
+      continue;
+    }
 
     if (strcmp(curr->argv[0], "exit") == 0) {
       exit(0);
     }
 
+    f = fork();
+    // printf("Fork returned: %d\n", (int)f);
+    e = errno;
+
+    if (f == -1) {
+      printf("Fork error: %s", strerror(e));
+      return RESERROR;
+    }
     if (f == 0) {
+      // printf("I am the child with pid %d\n", (int)getpid());
       execvp(curr->argv[0], curr->argv);
       e = errno;
       printf("Error while executing: %s", strerror(e));
       exit(1);
     }
-    if (f == -1) {
-      printf("Fork error: %s", strerror(e));
-      return RESERROR;
-    }
+
+    // printf("I am the parent with pid '%d' waiting for child to end.\n",
+    // (int)getpid());
+    wait(&procres);
+    int child_return_value = WEXITSTATUS(procres);
+    printf("%d\n", child_return_value);
+    // printf("Now parent turn.\n");
+
     curr = curr->next;
   }
   return RESSUCCESS;
 }
+
 /* --------------------------------------------------------------------------------------
  */
