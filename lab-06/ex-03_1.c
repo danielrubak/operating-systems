@@ -98,7 +98,7 @@ int main(int argc, char *argv[]) {
         }
         write(pipe_from_child_b[1], &words_with_pipe_counter,
               sizeof(words_with_pipe_counter));
-        // printf("Child A write value : %d\n", words_with_pipe_counter);
+        // printf("Child B write value : %d\n", words_with_pipe_counter);
       }
 
       close(pipe_from_parent_2[0]);

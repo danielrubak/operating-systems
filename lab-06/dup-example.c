@@ -21,9 +21,10 @@ int main(void) {
 
   if (pid == 0) {
     close(pfd[1]);
-    // There is need to close stdin because dup2() will be using it
-    close(0);
-    // Previously used: dup(pfd[0]);
+    // There is need to close stdin because dup() do not doing that
+    // close(0);
+    // dup(pfd[0]);
+
     dup2(pfd[0], 0);
     read(STDIN_FILENO, buf, sizeof(buf));
     close(pfd[0]);
