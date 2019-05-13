@@ -15,6 +15,7 @@ int get_term_char() {
   tcsetattr(STDIN_FILENO, TCSANOW, &new_term_conf);
 
   // Get char and restore previous configuration
+
   int ch = getchar();
   tcsetattr(STDIN_FILENO, TCSANOW, &previous_term_conf);
   return ch;
@@ -28,15 +29,16 @@ int main(void) {
                         "-.-- ", "--.. "};
   char bufor[6] = "";
   char sign;
+  printf("Press ENTER to exit.\n");
 
   while (1) {
-    // TODO: Catch exception like number of special char
     sign = get_term_char();
 
     // If user entered new line sign, break main loop
-    if (sign == '\n')
+    if (sign == '\n') {
+      printf("\nExiting...\n");
       break;
-
+    }
     strcpy(bufor, morse_code[sign - 'a']);
     write(1, bufor, 6);
   }
