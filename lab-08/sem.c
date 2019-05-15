@@ -1,34 +1,16 @@
-/*
-    Wspolna pamiec
-    --------------
-
-    --> dwa procesy, "pm" i "pp", dokonuja przelewow
-        z konto1 na konto2
-        (bez wzajemnego wykluczania)
-
-    --> nacisniecie Ctrl-C powoduje zakonczenie procesow
-        + wyswietlenie informacji o stanie kont
-
-    --> jest tworzony proces "pp2", wyswietlajacy (co 1 sekunde)
-        sume kont
-
-    --> informacje o segmentach pamieci dzielonej:
-        polecenie "ipcs"
-*/
-
 #include "unix.h"
 #include <sys/ipc.h>
+#include <sys/sem.h>
 #include <sys/shm.h>
 
 #define KLUCZ 12345
-// wszystkie osoby musza miec inny klucz !
-// (nr legitymacji ?)
 
 struct KONTA {
   long konto1, konto2;
 };
+typedef struct KONTA *konta_t;
+konta_t c;
 
-struct KONTA *c;
 int koniec = 0;
 
 void ObslugaSIGINT(int i) {
@@ -37,7 +19,7 @@ void ObslugaSIGINT(int i) {
   koniec = 1;
 }
 
-main() {
+int main() {
   signal(SIGINT, ObslugaSIGINT);
 
   int pid = fork();
@@ -48,14 +30,14 @@ main() {
       printf("pp2: poczatek; getpid()=%i\n", getpid());
       sleep(1);
 
-      int i, j;
+      int i;
       printf("pp2: uzyskujemy id wspolnej pamieci ...\n");
       int id = shmget(KLUCZ, 0, 0);
       if (id == -1)
         perror("pp2: shmget; Blad !!!");
 
-      c = (struct KONTA *)shmat(id, 0, 0);
-      if (c == (struct KONTA *)-1) {
+      c = (konta_t)shmat(id, 0, 0);
+      if (c == (konta_t)-1) {
         perror("pp2: shmat; Blad !!!");
         exit(1);
       }
@@ -75,15 +57,33 @@ main() {
       exit(0);
     }
 
-    // pm
     int i, j;
     printf("pm: uzyskujemy id wspolnej pamieci ...\n");
-    int id = shmget(KLUCZ, sizeof(struct KONTA), IPC_CREAT | IPC_EXCL | 0666);
+    int id = shmget(KLUCZ, sizeof(struct KONTA), IPC_CREAT | IPC_EXCL | 0777);
     if (id == -1)
       perror("pm: shmget; Blad !!!");
 
-    c = (struct KONTA *)shmat(id, 0, 0);
-    if (c == (struct KONTA *)-1) {
+    printf("pm: uzyskujemy id zbioru semaforow ...\n");
+    int id2 = semget(KLUCZ, 1, IPC_CREAT | IPC_EXCL | 0777);
+    if (id2 == -1)
+      perror("pm: semget; Blad !!!");
+
+    printf("pm: inicjujemy semafory ...\n");
+    // podobno to powinno byc zdefiniowane w <sys/sem.h> ???
+    union semun {
+      int val;
+      struct semid_ds *buf;
+      unsigned short int *array;
+      struct seminfo *__buf;
+    };
+    union semun arg;
+    arg.val = 0;
+    j = semctl(id2, 0, SETVAL, arg);
+    if (j == -1)
+      perror("pm: semctl; Blad !!!");
+
+    c = (konta_t)shmat(id, 0, 0);
+    if (c == (konta_t)-1) {
       perror("pm: shmat; Blad !!!");
       exit(1);
     }
@@ -92,9 +92,25 @@ main() {
     c->konto2 = 0;
 
     while (1) {
+
+      struct sembuf buf;
+      buf.sem_num = 0;
+      buf.sem_op = -1;
+      buf.sem_flg = 0;
+      i = semop(id2, &buf, 1);
+      if (i == -1)
+        perror("pm: semop(-1); Blad !!!");
+
       long przelew = random();
       c->konto1 -= przelew;
       c->konto2 += przelew;
+
+      buf.sem_num = 0;
+      buf.sem_op = +1;
+      buf.sem_flg = 0;
+      i = semop(id2, &buf, 1);
+      if (i == -1)
+        perror("pm: semop(+1); Blad !!!");
 
       if (koniec)
         break;
@@ -112,31 +128,58 @@ main() {
     pid1 = wait(&status);
     printf("pm: wait()=%i status=%04X\n", pid1, status);
 
+    printf("pm: usuwamy segment pamieci dzielonej\n");
     i = shmctl(id, IPC_RMID, NULL);
     if (i == -1)
       perror("pm: shmctl(IPC_RMID); Blad !!!");
+
+    printf("pm: usuwamy zbior semaforow\n");
+    i = semctl(id2, 0, IPC_RMID, NULL);
+    if (i == -1)
+      perror("pm: semctl(IPC_RMID); Blad !!!");
 
     printf("pm: koniec\n");
   } else { // pp
     printf("pp: poczatek; getpid()=%i\n", getpid());
     sleep(1);
 
-    int i, j;
+    int i;
     printf("pp: uzyskujemy id wspolnej pamieci ...\n");
     int id = shmget(KLUCZ, 0, 0);
     if (id == -1)
       perror("pp: shmget; Blad !!!");
 
-    c = (struct KONTA *)shmat(id, 0, 0);
-    if (c == (struct KONTA *)-1) {
+    printf("pp: uzyskujemy id zbioru semaforow ...\n");
+    int id2 = semget(KLUCZ, 0, 0);
+    if (id2 == -1)
+      perror("pp: semget; Blad !!!");
+
+    c = (konta_t)shmat(id, 0, 0);
+    if (c == (konta_t)-1) {
       perror("pp: shmat; Blad !!!");
       exit(1);
     }
 
     while (1) {
+
+      struct sembuf buf;
+      buf.sem_num = 0;
+      buf.sem_op = -1;
+      buf.sem_flg = 0;
+      i = semop(id2, &buf, 1);
+      if (i == -1)
+        perror("pp: semop(-1); Blad !!!");
+
       long przelew = random();
       c->konto1 -= przelew;
       c->konto2 += przelew;
+
+      buf.sem_num = 0;
+      buf.sem_op = +1;
+      buf.sem_flg = 0;
+      i = semop(id2, &buf, 1);
+      if (i == -1)
+        perror("pp: semop(+1); Blad !!!");
 
       if (koniec)
         break;
