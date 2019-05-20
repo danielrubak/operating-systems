@@ -1,5 +1,5 @@
 /*
-** client.c -- a stream socket client demo, single client connection
+** client.c -- a stream socket client demo, multiple clients connection
 */
 
 #include <errno.h>
@@ -14,12 +14,10 @@
 
 #define h_addr h_addr_list[0] // for backward compatibility
 #define PORT 26662            // the port client will be connecting to
-
-#define MAXDATASIZE 100 // max number of bytes we can get at once
+#define MAXDATASIZE 100       // max number of bytes we can get at once
 
 int main(int argc, char *argv[]) {
-  int sockfd, numbytes;
-  char buf[MAXDATASIZE];
+  int sockfd;
   struct hostent *he;
   struct sockaddr_in their_addr; // connector's address information
 
@@ -49,14 +47,13 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
-  if ((numbytes = recv(sockfd, buf, MAXDATASIZE - 1, 0)) == -1) {
-    perror("recv");
-    exit(1);
+  char msg_to_send[MAXDATASIZE];
+  while (1) {
+    scanf("%s", msg_to_send);
+    if (send(sockfd, msg_to_send, MAXDATASIZE - 1, 0) == -1)
+      perror("send");
+    printf("Send: %s\n", msg_to_send);
   }
-
-  buf[numbytes] = '\0';
-
-  printf("Received: %s", buf);
 
   close(sockfd);
 

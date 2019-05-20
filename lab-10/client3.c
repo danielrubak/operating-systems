@@ -1,5 +1,6 @@
 /*
-** client.c -- a stream socket client demo, single client connection
+** client.c -- a stream socket client demo, communication in both direction
+*between one server and multiple clients
 */
 
 #include <errno.h>
@@ -14,17 +15,15 @@
 
 #define h_addr h_addr_list[0] // for backward compatibility
 #define PORT 26662            // the port client will be connecting to
-
-#define MAXDATASIZE 100 // max number of bytes we can get at once
+#define MAXDATASIZE 100       // max number of bytes we can get at once
 
 int main(int argc, char *argv[]) {
-  int sockfd, numbytes;
-  char buf[MAXDATASIZE];
+  int sockfd;
   struct hostent *he;
   struct sockaddr_in their_addr; // connector's address information
 
   if (argc != 2) {
-    fprintf(stderr, "usage: client hostname\n");
+    fprintf(stderr, "usage: ./client hostname\n");
     exit(1);
   }
 
@@ -49,16 +48,28 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
-  if ((numbytes = recv(sockfd, buf, MAXDATASIZE - 1, 0)) == -1) {
-    perror("recv");
-    exit(1);
+  int pid, read_res = 0;
+  char msg_to_send[MAXDATASIZE], received_msg[MAXDATASIZE];
+
+  if ((pid = fork()) == -1)
+    perror("fork");
+
+  if (pid == 0) {
+    while (1) {
+      scanf("%s", msg_to_send);
+      if (send(sockfd, msg_to_send, MAXDATASIZE - 1, 0) == -1)
+        perror("send");
+      printf("Send: %s\n", msg_to_send);
+    }
+  } else if (pid > 0) {
+    while (1) {
+      if ((read_res = read(sockfd, received_msg, MAXDATASIZE - 1)) == -1)
+        perror("read");
+      if (read_res > 0)
+        printf("Received: %s\n", received_msg);
+    }
   }
 
-  buf[numbytes] = '\0';
-
-  printf("Received: %s", buf);
-
   close(sockfd);
-
   return 0;
 }

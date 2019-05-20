@@ -1,5 +1,5 @@
 /*
-** server.c -- a stream socket server demo
+** server.c -- a stream socket server demo, single client
 */
 
 #define _GNU_SOURCE
@@ -67,17 +67,18 @@ int main(void) {
     exit(1);
   }
 
-  sin_size = sizeof their_addr;
-  if ((new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size)) ==
-      -1) {
-    perror("accept");
+  while (1) {
+    sin_size = sizeof their_addr;
+    if ((new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size)) ==
+        -1) {
+      perror("accept");
+    }
+
+    printf("Server: got connection from %s\n", inet_ntoa(their_addr.sin_addr));
+    if (send(new_fd, "Hello, world!\n", 14, 0) == -1)
+      perror("send");
+    close(new_fd);
   }
-  printf("server: got connection from %s\n", inet_ntoa(their_addr.sin_addr));
-  if (send(new_fd, "Hello, world!\n", 14, 0) == -1)
-    perror("send");
-  sleep(5); // just for observing easily that the server cannot serve a few
-            // clients concurrently
-  close(new_fd);
 
   return 0;
 }
