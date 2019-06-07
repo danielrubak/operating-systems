@@ -1,3 +1,6 @@
+#define _BSD_SOURCE
+#define _XOPEN_SOURCE
+
 #include <grp.h>
 #include <libgen.h>
 #include <pwd.h>

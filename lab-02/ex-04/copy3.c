@@ -15,7 +15,8 @@ void copy3(char *from, char *to) {
   }
   if ((stto = fopen(to, "w")) == NULL) {
   }
-  while ((c = getc(stfrom)) != EOF) putc(c, stto);
+  while ((c = getc(stfrom)) != EOF)
+    putc(c, stto);
   fclose(stfrom);
   fclose(stto);
   return;
