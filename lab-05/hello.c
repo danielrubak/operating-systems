@@ -1,4 +1,9 @@
+/*
+Simple program using thread to show message on standard output
+*/
+
 #include <pthread.h>
+#include <stdint.h> // intptr_t definition
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

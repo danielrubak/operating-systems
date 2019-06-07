@@ -1,3 +1,8 @@
+/*
+Threads synchronization using mutexes.
+Program counts the sum of values in the array of length LENGTH on NUM threads
+*/
+
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,7 +14,7 @@
 // ----------------------------------------------------------
 
 typedef struct {
-  long* a;
+  long *a;
   long sum;
   int veclen;
 } CommonData;
@@ -20,15 +25,15 @@ CommonData data;
 pthread_t threads[NUM];
 pthread_mutex_t mutex;
 
-void* calc(void* arg);  // Function which calculates sum of particular parts of
-                        // data.a array
+void *calc(void *arg); // Function which calculates sum of particular parts of
+                       // data.a array
 
 // ----------------------------------------------------------
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
   long i, sum = 0;
-  void* status;
-  long* a = (long*)malloc(NUM * LENGTH * sizeof(long));
+  void *status;
+  long *a = (long *)malloc(NUM * LENGTH * sizeof(long));
   pthread_attr_t attr;
   int rc;
 
@@ -50,7 +55,7 @@ int main(int argc, char* argv[]) {
   pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 
   for (i = 0; i < NUM; i++) {
-    rc = pthread_create(&threads[i], &attr, calc, (void*)i);
+    rc = pthread_create(&threads[i], &attr, calc, (void *)i);
     if (rc) {
       fprintf(stderr, "Failed to create thread #%ld - %s\n", (long)i,
               strerror(rc));
@@ -78,9 +83,9 @@ int main(int argc, char* argv[]) {
 
 // ----------------------------------------------------------
 
-void* calc(void* arg) {
+void *calc(void *arg) {
   long tid = (long)arg;
-  long* x = data.a;
+  long *x = data.a;
   long mysum = 0;
   int i;
 
@@ -95,7 +100,5 @@ void* calc(void* arg) {
   data.sum += mysum;
   pthread_mutex_unlock(&mutex);
 
-  pthread_exit((void*)0);
+  pthread_exit((void *)0);
 }
-
-// ----------------------------------------------------------

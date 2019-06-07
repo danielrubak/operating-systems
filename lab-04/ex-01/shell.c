@@ -23,7 +23,8 @@ int main(void) {
    */
   while (1) {
     printprompt();
-    if (readcmd(cmd, MAXCMD) == RESERROR) continue;
+    if (readcmd(cmd, MAXCMD) == RESERROR)
+      continue;
     // res = parsecmd(cmd, MAXCMD, &cmds);
     parsecmd(cmd, MAXCMD, &cmds);
     // printparsedcmds(&cmds);
@@ -38,8 +39,9 @@ int main(void) {
 
 /* This function sets up the initial values of the fileds in the cmdlist
  * structure  */
-void setupnewcommand(struct cmdlist* __cmd) {
-  if (__cmd == NULL) return;
+void setupnewcommand(struct cmdlist *__cmd) {
+  if (__cmd == NULL)
+    return;
 
   __cmd->next = NULL; /* in order to know where is the end of the list */
   __cmd->argv = NULL; /* see realloc(3) */
@@ -51,7 +53,7 @@ void setupnewcommand(struct cmdlist* __cmd) {
 
 /* This function adds the NULL pointer to the end of the argument list  */
 /* For more details see exec(3) */
-int setupparsedcommand(struct cmdlist* __cmd) {
+int setupparsedcommand(struct cmdlist *__cmd) {
   /* Checking id the argument is not NULL */
   if (__cmd == NULL) {
     printf("Null pointer at setupparsedcommand.");
@@ -59,8 +61,8 @@ int setupparsedcommand(struct cmdlist* __cmd) {
   }
 
   __cmd->argc++;
-  __cmd->argv = (char**)realloc(
-      __cmd->argv, __cmd->argc * sizeof(char*)); /* Adding new pointer  */
+  __cmd->argv = (char **)realloc(
+      __cmd->argv, __cmd->argc * sizeof(char *)); /* Adding new pointer  */
   if (__cmd->argv == NULL) /* Checking is allocation was OK  */
     return RESERROR;
   __cmd->argv[__cmd->argc - 1] = NULL; /* Setting NULL poniter  */
@@ -71,7 +73,7 @@ int setupparsedcommand(struct cmdlist* __cmd) {
  */
 
 /* 2. Reading command from the std input */
-int readcmd(char* __buf, int __bufsize) {
+int readcmd(char *__buf, int __bufsize) {
   /* Reading command from the std input  */
   if (fgets(__buf, __bufsize, stdin) == NULL) {
     printf("Error while reading -- try again!");
@@ -101,16 +103,17 @@ int readcmd(char* __buf, int __bufsize) {
  */
 
 /* 3. Parsing this command */
-int parsecmd(char* __buf, int __bufsize, struct cmdlist* __head) {
-  char* cmd = __buf; /* String that must be parsed  */
+int parsecmd(char *__buf, int __bufsize, struct cmdlist *__head) {
+  char *cmd = __buf; /* String that must be parsed  */
   // printf("Command to parse: %s\n", cmd);
-  char* word; /* String between white characters  */
-  struct cmdlist* curr = __head;
+  char *word; /* String between white characters  */
+  struct cmdlist *curr = __head;
 
   /* Reading next word - read strtok(3)  */
   while ((word = strtok(cmd, " \t\n")) != NULL) {
     if (strcmp(word, "||") == 0 || strcmp(word, "&&") == 0) {
-      struct cmdlist* new_cmd = (struct cmdlist*)malloc(sizeof(struct cmdlist));
+      struct cmdlist *new_cmd =
+          (struct cmdlist *)malloc(sizeof(struct cmdlist));
       curr->next = new_cmd;
 
       /* Setting up parsed command -- the NULL pointer at the end of the
@@ -131,9 +134,9 @@ int parsecmd(char* __buf, int __bufsize, struct cmdlist* __head) {
 
     } else {
       curr->argc++;
-      curr->argv = (char**)realloc(
+      curr->argv = (char **)realloc(
           curr->argv,
-          sizeof(char*) *
+          sizeof(char *) *
               curr->argc); /* memory reallocation - needed for new argument  */
       if (curr->argv == NULL) {
         printf("Error while allocating memory!");
@@ -157,10 +160,10 @@ int parsecmd(char* __buf, int __bufsize, struct cmdlist* __head) {
  */
 
 /* 4. Executing parsed commands */
-int executecmds(struct cmdlist* __head) {
+int executecmds(struct cmdlist *__head) {
   // printf("I am: %d\n", (int)getpid());
   int f, e, procres = 0;
-  struct cmdlist* curr = __head;
+  struct cmdlist *curr = __head;
 
   while (curr != NULL) {
     // printf("Previous command execution status: %d\n", procres);

@@ -1,3 +1,7 @@
+/*
+Simple program using thread to show message on standard output
+*/
+
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>

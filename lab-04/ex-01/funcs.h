@@ -26,24 +26,24 @@
 /* -------------------------------------------------------------------------- */
 
 struct cmdlist {
-  char**
+  char **
       argv; /* The command argv[0] and list of its arguments argv[1...argc-1] */
   int argc; /* The numer of elements in the argv array  */
   int conjuction; /* Indicates which operator (|| or &&) was used before this
                      command */
-  struct cmdlist*
-      next; /* Pointer to the next command. NULL denotes the last element. */
+  struct cmdlist
+      *next; /* Pointer to the next command. NULL denotes the last element. */
 };
 
 /* -------------------------------------------------------------------------- */
 
-void setupnewcommand(struct cmdlist* __cmd);
+void setupnewcommand(struct cmdlist *__cmd);
 void printprompt(void);
-int readcmd(char* __buf, int __bufsize);
-int parsecmd(char* __buf, int __bufsize, struct cmdlist* __head);
-void printparsedcmds(struct cmdlist* __head);
-int executecmds(struct cmdlist* __head);
-void dealocate(struct cmdlist* __head);
+int readcmd(char *__buf, int __bufsize);
+int parsecmd(char *__buf, int __bufsize, struct cmdlist *__head);
+void printparsedcmds(struct cmdlist *__head);
+int executecmds(struct cmdlist *__head);
+void dealocate(struct cmdlist *__head);
 
 /* -------------------------------------------------------------------------- */
 

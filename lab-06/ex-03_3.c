@@ -12,7 +12,7 @@ using C and Unix. */
 #include <sys/wait.h>
 #include <unistd.h>
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
   int pipefd_1[2], pipefd_2[2], pipefd_3[2], pipefd_4[2], status;
 
   pid_t cpid;
@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
   if (cpid == 0) {
     // move output to pipe
     dup2(pipefd_1[1], STDOUT_FILENO);
-    execlp("who", "who", (char*)NULL);
+    execlp("who", "who", (char *)NULL);
   }
 
   cpid = fork();
@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
     dup2(pipefd_1[0], STDIN_FILENO);
     // move output to next pipe
     dup2(pipefd_2[1], STDOUT_FILENO);
-    execlp("cut", "cut", "-d", " ", "-f1", (char*)NULL);
+    execlp("cut", "cut", "-d", " ", "-f1", (char *)NULL);
   }
 
   // close pipe so EOF can work
@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
     dup2(pipefd_2[0], STDIN_FILENO);
     // move output to next pipe
     dup2(pipefd_3[1], STDOUT_FILENO);
-    execlp("sort", "sort", (char*)NULL);
+    execlp("sort", "sort", (char *)NULL);
   }
 
   // close pipe so EOF can work
@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
     dup2(pipefd_3[0], STDIN_FILENO);
     // move output to next pipe
     dup2(pipefd_4[1], STDOUT_FILENO);
-    execlp("uniq", "uniq", "-c", (char*)NULL);
+    execlp("uniq", "uniq", "-c", (char *)NULL);
   }
 
   // close pipe so EOF can work
@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) {
     // get input from pipe
     dup2(pipefd_4[0], STDIN_FILENO);
 
-    execlp("sort", "sort", "-r", (char*)NULL);
+    execlp("sort", "sort", "-r", (char *)NULL);
   }
 
   // close pipe so EOF can work

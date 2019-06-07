@@ -16,8 +16,15 @@ This repository contains the source code of simple programs that I developed as 
   * get data from `stat` structure
   * processing data about files
 * **lab-04 - Introduction to processes**
+  * function `fork()` and `exec()`
+  * own implementation of simple shell
 * **lab-05 - Processes and threads**
+  * creating threads via `pthread_create()` and waiting for finish `pthread_join()`
+  * threads synchronization using mutexes
+  * functions `pthread_mutex_lock()` and `pthread_mutex_unlock()`
+  * conditional variables (functions `pthread_cond_signal()` and `pthread_cond_wait()`)
 * **lab-06 - IPC (Inter-process communication), part 1**
+  * communication between processes by pipes
 * **lab-07 - IPC (Inter-process communication), part 2**
 * **lab-08 - IPC (Inter-process communication), part 3**
 * **lab-09 - Terminal I/O**

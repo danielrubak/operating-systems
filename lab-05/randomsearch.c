@@ -1,3 +1,7 @@
+/*
+Searching value TARGET using NUM_THREADS threads
+*/
+
 #include <errno.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -53,8 +57,8 @@ void *search(void *arg) {
   struct thread_params *tp = (struct thread_params *)arg;
 
   pthread_cleanup_push(cleanup, tp);
-  int threadIdx = tp->thread_idx;  // thread idx
-  int toFind = tp->target;         // value to find
+  int threadIdx = tp->thread_idx; // thread idx
+  int toFind = tp->target;        // value to find
   int ti = 0;
   int rnd;
 

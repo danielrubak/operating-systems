@@ -13,10 +13,10 @@
 
 #define BUFSIZE 5
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
   struct rlimit limit;
   char buf[BUFSIZE] = {'a', 'a', 'a', 'a', 'a'};
-  char* filename;
+  char *filename;
   int bytes = 0, towrite, smin = 0, smax = 10000, sdef = 100, wrote, fd,
       s = sdef;
 
@@ -37,7 +37,8 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  if ((s < smin) || (s > smax)) s = sdef;
+  if ((s < smin) || (s > smax))
+    s = sdef;
 
   /* reading file size limit */
   getrlimit(RLIMIT_FSIZE, &limit);
@@ -51,7 +52,8 @@ int main(int argc, char* argv[]) {
     towrite = towrite < BUFSIZE ? towrite : BUFSIZE;
     wrote = write(fd, buf, towrite);
     bytes += wrote;
-    if (wrote == -1) break;
+    if (wrote == -1)
+      break;
   } while ((wrote > 0) && (bytes < s));
   close(fd);
 

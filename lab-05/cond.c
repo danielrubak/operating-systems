@@ -1,3 +1,8 @@
+/*
+Two threads increment the value of globalvariable and the third thread waits for
+information that the maximum value has been reached
+*/
+
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,8 +15,8 @@ int globalvariable = 0;
 pthread_mutex_t mutex;
 pthread_cond_t cond;
 
-void* increment(void*);
-void* printinfo(void*);
+void *increment(void *);
+void *printinfo(void *);
 
 // ----------------------------------------------------------
 
@@ -28,8 +33,8 @@ int main() {
   pthread_attr_init(&attr);
   pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 
-  pthread_create(&t1, &attr, increment, (void*)1);
-  pthread_create(&t2, &attr, increment, (void*)2);
+  pthread_create(&t1, &attr, increment, (void *)1);
+  pthread_create(&t2, &attr, increment, (void *)2);
   pthread_create(&t3, &attr, printinfo, NULL);
 
   pthread_join(t1, NULL);
@@ -45,7 +50,7 @@ int main() {
 
 // ----------------------------------------------------------
 
-void* increment(void* arg) {
+void *increment(void *arg) {
   while (1) {
     long tid = (long)arg;
     pthread_mutex_lock(&mutex);
@@ -61,12 +66,12 @@ void* increment(void* arg) {
 
     pthread_mutex_unlock(&mutex);
   }
-  pthread_exit((void*)0);
+  pthread_exit((void *)0);
 }
 
 // ----------------------------------------------------------
 
-void* printinfo(void* arg) {
+void *printinfo(void *arg) {
   pthread_mutex_lock(&mutex);
 
   while (globalvariable < 100) {
@@ -75,7 +80,5 @@ void* printinfo(void* arg) {
   printf("osiągnieta została maksymalna wartość %d\n", globalvariable);
 
   pthread_mutex_unlock(&mutex);
-  pthread_exit((void*)0);
+  pthread_exit((void *)0);
 }
-
-// ----------------------------------------------------------
